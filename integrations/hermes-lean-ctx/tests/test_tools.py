@@ -17,7 +17,7 @@ def _offline_gateway() -> ToolGateway:
 
 
 def test_schemas_are_wellformed():
-    assert len(schemas.ALL_SCHEMAS) == 6
+    assert len(schemas.ALL_SCHEMAS) == 1
     for s in schemas.ALL_SCHEMAS:
         assert set(s) >= {"name", "description", "parameters"}
         params = s["parameters"]
@@ -29,7 +29,7 @@ def test_schemas_are_wellformed():
 def test_get_tool_schemas_respects_toggle():
     on = LeanCtxConfig(base_url="http://x", enable_tools=True)
     off = LeanCtxConfig(base_url="http://x", enable_tools=False)
-    assert len(tools.get_tool_schemas(on)) == 6
+    assert len(tools.get_tool_schemas(on)) == 1
     assert tools.get_tool_schemas(off) == []
     # returns copies, not the shared schema objects
     got = tools.get_tool_schemas(on)
@@ -43,13 +43,13 @@ def test_handle_unknown_tool_returns_error():
 
 
 def test_handle_known_tool_daemon_down_returns_error():
-    out = tools.handle_tool_call(_offline_gateway(), "ctx_search", {"pattern": "x"})
+    out = tools.handle_tool_call(_offline_gateway(), "ctx_read", {"path": "x"})
     assert json.loads(out)["error"].startswith("lean-ctx call failed:")
 
 
 def test_handle_tool_coerces_string_args():
     # invalid name still short-circuits before any call; string args must parse
-    out = tools.handle_tool_call(_offline_gateway(), "ctx_search", "{\"pattern\": \"x\"}")
+    out = tools.handle_tool_call(_offline_gateway(), "ctx_read", "{\"path\": \"x\"}")
     assert json.loads(out)["error"].startswith("lean-ctx call failed:")  # reached daemon path, then no-op
 
 

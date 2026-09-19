@@ -2,8 +2,8 @@
 
 **lean-ctx as Hermes' active context engine.** This plugin replaces Hermes
 Agent's built-in `ContextCompressor` with deterministic, prompt-cache-friendly
-compaction and injects lean-ctx's code-intelligence + cross-session memory tools
-natively into the agent's tool list.
+compaction and injects lean-ctx's `ctx_read` recall tool natively into the
+agent's tool list.
 
 Instead of being "just another MCP server the agent might call", lean-ctx
 *owns* the context window: it decides what to keep verbatim, offloads older
@@ -15,7 +15,7 @@ that memory back in losslessly.
 | | built-in `ContextCompressor` | hermes-lcm | **hermes-lean-ctx** |
 |---|---|---|---|
 | Strategy | summarize + drop | DAG + SQLite + FTS | BM25 + graph + knowledge + semantic + LITM placement |
-| Recall after compaction | lossy | lossless (grep/expand) | lossless (`ctx_search`/`ctx_semantic_search`/`ctx_expand`/`ctx_read`/`ctx_knowledge`) |
+| Recall after compaction | lossy | lossless (grep/expand) | lossless (`ctx_read`) |
 | Cross-session memory | no | per-project | yes (sessions, knowledge, handoff ledgers) |
 | Determinism / prompt-cache | n/a | partial | deterministic, byte-stable output (prompt-cache friendly) |
 | Engine location | in-agent | in-plugin | in the lean-ctx daemon (Single Source of Truth) |
@@ -30,7 +30,7 @@ Hermes agent loop
    └─ ContextEngine ABC ── LeanCtxEngine (this plugin, thin adapter)
                                └─ leanctx SDK ── HTTP /v1 ── lean-ctx daemon
                                                               └─ ctx_transcript_compact,
-                                                                 ctx_search, ctx_knowledge, …
+                                                                 ctx_read, …
 ```
 
 - **`compress(messages)`** keeps the system preamble and a *fresh tail* verbatim,
@@ -41,8 +41,7 @@ Hermes agent loop
 - **`tool_call`/`tool_result` pairs are never split** across the compaction
   boundary — this invariant is enforced and tested on both the daemon and plugin
   side.
-- **Native tools** (`get_tool_schemas`/`handle_tool_call`) expose `ctx_search`,
-  `ctx_semantic_search`, `ctx_read`, `ctx_expand`, `ctx_knowledge`, `ctx_summary`
+- **Native tool** (`get_tool_schemas`/`handle_tool_call`) exposes `ctx_read`
   so the agent can page detail back in on demand.
 - **Cross-session persistence** via session lifecycle hooks: `resume` on start,
   `ctx_summary` + a deterministic `ctx_handoff` ledger on end.

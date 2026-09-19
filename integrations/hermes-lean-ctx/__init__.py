@@ -1,8 +1,8 @@
 """hermes-lean-ctx — lean-ctx as Hermes' active context engine.
 
 Replaces the built-in ``ContextCompressor`` with deterministic, prompt-cache
-friendly compaction and injects lean-ctx's code-intelligence + cross-session
-memory tools natively into the agent.
+friendly compaction and injects lean-ctx's ``ctx_read`` recall tool natively
+into the agent.
 
 Activate via ``config.yaml``::
 

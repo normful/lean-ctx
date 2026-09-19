@@ -42,7 +42,9 @@ def test_status_includes_daemon_metrics():
 
 def test_native_tool_dispatch_real():
     engine = _engine()
-    out = engine.handle_tool_call("ctx_search", {"pattern": "fn ", "max_results": 3})
+    from pathlib import Path as _Path
+    _readme = str(_Path(__file__).resolve().parent.parent / "README.md")
+    out = engine.handle_tool_call("ctx_read", {"path": _readme})
     assert isinstance(out, str) and out
     # not the daemon-down error envelope
     try:

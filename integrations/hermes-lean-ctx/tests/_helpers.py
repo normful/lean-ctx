@@ -72,7 +72,7 @@ def make_with_tool_block() -> List[Dict[str, Any]]:
             "content": None,
             "tool_calls": [
                 {"id": "call_1", "type": "function",
-                 "function": {"name": "ctx_search", "arguments": "{\"pattern\":\"x\"}"}},
+                 "function": {"name": "ctx_read", "arguments": "{\"path\":\"x\"}"}},
                 {"id": "call_2", "type": "function",
                  "function": {"name": "ctx_read", "arguments": "{\"path\":\"a\"}"}},
             ],
